@@ -35,7 +35,8 @@ class SystemProbability(Base):
     name = Column(String, index = True)
     date_created = Column(DateTime, default = _dt.datetime.utcnow)
     date_last_updated = Column(DateTime, default = _dt.datetime.utcnow)
-    # system_probability = Column(Float, index = True, default=0 )
+    
+    system_probability = Column(Float,  default=0 )
     
     Graphs = relationship("Graph", back_populates="owner")
     Nodes = relationship("Node", back_populates="owner")

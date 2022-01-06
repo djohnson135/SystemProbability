@@ -167,8 +167,9 @@ async def delete_system(system_id: int, user: schemas.User, db: Session):
     
 async def update_system(system_id: int, system: schemas.SystemProbabilityCreate, user: schemas.User, db: Session):
     system_db = await system_selector(system_id=system_id, user=user, db=db)
-    system_db.name = system.name
+    system_db.name = system.name 
     system_db.date_last_updated = _dt.datetime.utcnow()
+    # system_db.system_probability = system.system_probability #might change it to a function
     db.commit()
     db.refresh(system_db)
     return schemas.SystemProbability.from_orm(system_db)

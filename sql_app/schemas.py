@@ -76,6 +76,7 @@ class SystemProbability(SystemProbabilityBase):
     owner_id: int
     date_created: _dt.datetime
     date_last_updated: _dt.datetime
+    system_probability: float
     Graphs: List[Graph] = []
     Nodes: List[Node] = []
 
@@ -84,7 +85,8 @@ class SystemProbability(SystemProbabilityBase):
         orm_mode = True
 
 
-
+class ProbabilityUpdate(SystemProbabilityBase): 
+    system_probability: float
 
 
 class GraphCreate(GraphBase):
