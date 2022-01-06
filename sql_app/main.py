@@ -18,6 +18,8 @@ from . import crud, models, schemas
 
 # models.Base.metadata.create_all(bind=engine)
 
+crud.create_database()
+
 #we can only send schemas from endpoints and not models
 app = FastAPI()
 
@@ -53,8 +55,8 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(crud.get_d
     db_user = await crud.get_user_by_email(email = user.email, db = db)
     if db_user:
         raise HTTPException(status_code=400, detail= "Email already in use")
-    await crud.create_user(user = user, db = db)
-    return await crud.create_token(user)
+    users = await crud.create_user(user = user, db = db)
+    return await crud.create_token(users)
     
     
 @app.post("/token/")
