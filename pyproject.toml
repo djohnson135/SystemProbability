@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "API"
+version = "0.1.0"
+description = ""
+authors = ["Dathan Johnson <dathanljohnson135@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.68.1"
+uvicorn = {extras = ["standard"], version = "^0.15.0"}
+SQLAlchemy = "^1.4.29"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+PyJWT = "^2.3.0"
+python-multipart = "^0.0.5"
+numpy = "^1.22.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
