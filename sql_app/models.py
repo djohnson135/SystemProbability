@@ -16,7 +16,7 @@ class User(Base):
     id = Column(Integer, primary_key= True, index= True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
-    SystemProbabilitys = relationship("SystemProbability", back_populates= "owner")
+    systemProbabilitys = relationship("SystemProbability", back_populates= "owner")
     def verify_password(self, password: str):
         return _hash.bcrypt.verify(password, self.hashed_password)
 
@@ -25,7 +25,7 @@ class User(Base):
 
 class SystemProbability(Base):
 
-    __tablename__ = "SystemProbability"
+    __tablename__ = "systemProbability"
 
     #create columns
     id = Column(Integer, primary_key=True, index=True) #primary key. Add auto increment = true. 
@@ -35,38 +35,43 @@ class SystemProbability(Base):
     name = Column(String, index = True)
     date_created = Column(DateTime, default = _dt.datetime.utcnow)
     date_last_updated = Column(DateTime, default = _dt.datetime.utcnow)
-    # system_probability = Column(Float, index = True, default=0 )
     
-    Graphs = relationship("Graph", back_populates="owner")
-    Nodes = relationship("Node", back_populates="owner")
+    system_probability = Column(Float,  default=0 )
+    
+    # Graphs = relationship("Graph", back_populates="owner")
+    nodes = relationship("Node", back_populates="owner")
 
-    owner = relationship("User",back_populates="SystemProbabilitys")
-
-
-#creating tables
-class Graph(Base):
-
-    __tablename__ = "Graph"
-
-    #create columns
-    id = Column(Integer, primary_key=True, index=True)
-    node_id = Column(Integer, index = True)
-    edge_id = Column(Integer, index = True)
-    owner_id = Column(Integer, ForeignKey("SystemProbability.id")) #id of systemProb
-    #create relationship
-    owner = relationship("SystemProbability", back_populates="Graphs")
-
+    owner = relationship("User",back_populates="systemProbabilitys")
 
 
 
 class Node(Base):
 
-    __tablename__ = "Node"
+    __tablename__ = "node"
+
+    #create columns
+    id = Column(Integer, primary_key=True, index=True) #unique = True
+    name = Column(String, index=True)
+    probability = Column(Float, index = True)
+    owner_id = Column(Integer, ForeignKey("systemProbability.id"))
+    #create relationship
+    owner = relationship("SystemProbability", back_populates="nodes")
+    graphs = relationship("Graph", back_populates="owner")
+    
+    
+    
+    
+#creating tables
+class Graph(Base):
+
+    __tablename__ = "graph"
 
     #create columns
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    probability = Column(Float, index = True)
-    owner_id = Column(Integer, ForeignKey("SystemProbability.id"))
+    edge_node_id = Column(Integer,  nullable=False) #ForeignKey("node.id"),
+    owner_id = Column(Integer, ForeignKey("node.id"), nullable = False) #id of systemProb
     #create relationship
-    owner = relationship("SystemProbability", back_populates="Nodes")
+    owner = relationship("Node", back_populates="graphs", foreign_keys= "Graph.owner_id") #, foreign_keys= "Graph.owner_id"
+    # edge_node = relationship("Node", foreign_keys= "Node.id") #foreign_keys= "Graph.edge_node_id"
+
+
