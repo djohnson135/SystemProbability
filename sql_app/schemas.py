@@ -55,7 +55,7 @@ class NodeBase(BaseModel):
 class Node(NodeBase):
     id: int
     owner_id: int
-    Graphs: List[Graph] = []
+    graphs: List[Graph] = []
     class Config:
         orm_mode = True
 
@@ -77,7 +77,7 @@ class SystemProbability(SystemProbabilityBase):
     date_last_updated: _dt.datetime
     system_probability: float
     # Graphs: List[Graph] = []
-    Nodes: List[Node] = []
+    nodes: List[Node] = []
 
     
     class Config:

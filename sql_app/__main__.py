@@ -1,5 +1,4 @@
-
-import uvicorn
+# import uvicorn
 from typing import List
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -87,11 +86,10 @@ async def get_system(system_id: int, user: schemas.User = Depends(crud.get_curre
 
 # need to make edits to this because changing database structure
 
-# @app.delete("/users/me/SystemProbability/{system_id}", status_code=204)
-# async def delete_system(system_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
-    
-#     await crud.delete_system(system_id=system_id, user=user, db=db)
-#     return {"Message", "Successfully Deleted"}
+@app.delete("/users/me/SystemProbability/{system_id}", status_code=204)
+async def delete_system(system_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
+    await crud.delete_system(system_id=system_id, user=user, db=db)
+    return {"Message", "Successfully Deleted"}
 
 
 @app.put("/users/me/SystemProbability/{system_id}", status_code=200)
@@ -134,20 +132,20 @@ async def create_graph(system_id: int, node_id: int, graph: schemas.GraphCreate,
 async def get_graphs( node_id : int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
     return await crud.get_graphs(node_id = node_id,  db=db)
 
-# @app.delete("/users/me/SystemProbability/{system_id}/Graphs/{graph_id}", status_code=204)
-# async def delete_graph(system_id: int,  graph_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
-#     await crud.delete_graph(system_id=system_id, user=user, graph_id = graph_id, db=db)
-#     return {"Message", "Successfully Deleted"}
+@app.delete("/users/me/SystemProbability/{system_id}/Nodes/{node_id}/Graphs/{graph_id}", status_code=204)
+async def delete_graph(system_id: int, node_id: int, graph_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
+    await crud.delete_graph(system_id=system_id, user=user, graph_id = graph_id, db=db, node_id=node_id)
+    return {"Message", "Successfully Deleted"}
 
-# @app.put("/users/me/SystemProbability/{system_id}/Graphs/{graph_id}", status_code=200)
-# async def update_graph(system_id: int, graph_id: int, graph: schemas.GraphCreate, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
-#     await crud.update_graph(graph_id = graph_id, system_id=system_id, db=db, graph=graph, user=user)
-#     return {"Message", "Successfully Updated"}   
+@app.put("/users/me/SystemProbability/{system_id}/Nodes/{node_id}/Graphs/{graph_id}", status_code=200)
+async def update_graph(system_id: int, node_id : int, graph_id: int, graph: schemas.GraphCreate, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
+    await crud.update_graph(graph_id = graph_id, system_id=system_id, db=db, graph=graph, user=user, node_id = node_id)
+    return {"Message", "Successfully Updated"}   
 
 @app.get("/users/me/Graph/{graph_id}", response_model= schemas.Graph)
 async def get_graph(graph_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
     return await crud.get_graph( graph_id=graph_id, db=db)
 
 
-uvicorn.run(app,host="0.0.0.0", port=8000)
+# uvicorn.run(app,host="0.0.0.0", port=8000)
 

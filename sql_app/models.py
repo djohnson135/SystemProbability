@@ -16,7 +16,7 @@ class User(Base):
     id = Column(Integer, primary_key= True, index= True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
-    SystemProbabilitys = relationship("SystemProbability", back_populates= "owner")
+    systemProbabilitys = relationship("SystemProbability", back_populates= "owner")
     def verify_password(self, password: str):
         return _hash.bcrypt.verify(password, self.hashed_password)
 
@@ -25,7 +25,7 @@ class User(Base):
 
 class SystemProbability(Base):
 
-    __tablename__ = "SystemProbability"
+    __tablename__ = "systemProbability"
 
     #create columns
     id = Column(Integer, primary_key=True, index=True) #primary key. Add auto increment = true. 
@@ -39,24 +39,24 @@ class SystemProbability(Base):
     system_probability = Column(Float,  default=0 )
     
     # Graphs = relationship("Graph", back_populates="owner")
-    Nodes = relationship("Node", back_populates="owner")
+    nodes = relationship("Node", back_populates="owner")
 
-    owner = relationship("User",back_populates="SystemProbabilitys")
+    owner = relationship("User",back_populates="systemProbabilitys")
 
 
 
 class Node(Base):
 
-    __tablename__ = "Node"
+    __tablename__ = "node"
 
     #create columns
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True) #unique = True
     name = Column(String, index=True)
     probability = Column(Float, index = True)
-    owner_id = Column(Integer, ForeignKey("SystemProbability.id"))
+    owner_id = Column(Integer, ForeignKey("systemProbability.id"))
     #create relationship
-    owner = relationship("SystemProbability", back_populates="Nodes")
-    Graphs = relationship("Graph", back_populates="owner")
+    owner = relationship("SystemProbability", back_populates="nodes")
+    graphs = relationship("Graph", back_populates="owner")
     
     
     
@@ -64,14 +64,14 @@ class Node(Base):
 #creating tables
 class Graph(Base):
 
-    __tablename__ = "Graph"
+    __tablename__ = "graph"
 
     #create columns
     id = Column(Integer, primary_key=True, index=True)
-    edge_node_id = Column(Integer,ForeignKey("Node.id"), nullable=False)
-    owner_id = Column(Integer, ForeignKey("Node.id"), nullable = False) #id of systemProb
+    edge_node_id = Column(Integer,  nullable=False) #ForeignKey("node.id"),
+    owner_id = Column(Integer, ForeignKey("node.id"), nullable = False) #id of systemProb
     #create relationship
-    owner = relationship("Node", back_populates="Graphs")
-    edge_node = relationship("Node", foreign_keys=[edge_node_id])
+    owner = relationship("Node", back_populates="graphs", foreign_keys= "Graph.owner_id") #, foreign_keys= "Graph.owner_id"
+    # edge_node = relationship("Node", foreign_keys= "Node.id") #foreign_keys= "Graph.edge_node_id"
 
 
