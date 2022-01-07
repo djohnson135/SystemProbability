@@ -196,6 +196,8 @@ async def get_graphs( db: Session, node_id: int):
     # system = await system_selector(user=user, db=db, system_id = system_id)
     # node = await node_selector(system=system, db=db, node_id=node_id)
     graphs = db.query(models.Graph).filter_by(owner_id = node_id) 
+    if graphs is None:
+        raise HTTPException(status_code=404, detail = "Node does not exist")
     return list(map(schemas.Graph.from_orm, graphs))  
 
         

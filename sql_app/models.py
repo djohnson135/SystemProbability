@@ -72,5 +72,6 @@ class Graph(Base):
     owner_id = Column(Integer, ForeignKey("Node.id"), nullable = False) #id of systemProb
     #create relationship
     owner = relationship("Node", back_populates="Graphs")
+    edge_node = relationship("Node", foreign_keys=[edge_node_id])
 
 
