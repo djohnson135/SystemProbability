@@ -9,7 +9,7 @@ from pydantic.schema import model_schema
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import update
 
-from . import crud, models, schemas
+from sql_app import crud, models, schemas
 
 
 
