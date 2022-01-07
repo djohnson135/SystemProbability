@@ -1,3 +1,5 @@
+
+import uvicorn
 from typing import List
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -145,3 +147,7 @@ async def get_graphs( node_id : int, user: schemas.User = Depends(crud.get_curre
 @app.get("/users/me/Graph/{graph_id}", response_model= schemas.Graph)
 async def get_graph(graph_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
     return await crud.get_graph( graph_id=graph_id, db=db)
+
+
+uvicorn.run(app,host="0.0.0.0", port=8000)
+
