@@ -11,6 +11,7 @@ from sqlalchemy.sql.expression import update
 
 from . import crud, models, schemas
 
+import uvicorn
 
 
 # from .database import SessionLocal, engine
@@ -22,8 +23,6 @@ crud.create_database()
 
 #we can only send schemas from endpoints and not models
 app = FastAPI()
-
-#uvicorn sql_app.main:app --reload
 
 #https://towardsdatascience.com/fastapi-cloud-database-loading-with-python-1f531f1d438a
 
@@ -139,3 +138,5 @@ async def update_graph(system_id: int, graph_id: int, graph: schemas.GraphCreate
 @app.get("/users/me/SystemProbability/{system_id}/Graphs/{graph_id}", response_model= schemas.Graph)
 async def get_graph(system_id: int, graph_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
     return await crud.get_graph(system_id=system_id, graph_id=graph_id,user=user, db=db)
+
+uvicorn.run(app,host="0.0.0.0", port=8000)
