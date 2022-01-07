@@ -47,11 +47,14 @@ async def node_selector(node_id: int, system: schemas.SystemProbability, db: Ses
         raise HTTPException(status_code=404, detail = "Node does not exist")
     return node
     
-async def graph_selector(graph_id: int, system: schemas.SystemProbability, db: Session):
-    graph = db.query(models.Graph).filter_by(owner_id = system.id).filter(models.Graph.id == graph_id).first()
+async def graph_selector(graph_id: int, node: schemas.Node, db: Session):
+    graph = db.query(models.Graph).filter_by(owner_id = node.id).filter(models.Graph.id == graph_id).first()
     if graph is None:
         raise HTTPException(status_code=404, detail = "Graph does not exist")
     return graph
+
+
+#END OF HELPER FUNCTIONS
 
 async def get_user_by_email(email: str, db: Session):
     return db.query(models.User).filter(models.User.email == email).first()
@@ -102,26 +105,14 @@ async def create_node(db: Session, node: schemas.NodeCreate, system_id: int, use
     db.refresh(node)
     return schemas.Node.from_orm(node)
 
-async def create_graph(db: Session, graph: schemas.GraphCreate, system_id: int, user: schemas.User):
-    await system_selector(user=user, db=db, system_id=system_id)      
-    graph = models.Graph(**graph.dict(), owner_id = system_id)
-    db.add(graph)
-    db.commit()
-    db.refresh(graph)
-    return schemas.Graph.from_orm(graph)
 
 
         
-async def get_node(db: Session, system_id: int, node_id: int, user: schemas.User):
-    system = await system_selector(system_id=system_id, user=user, db=db)
-    node = await node_selector(node_id=node_id, db=db, system = system)
+async def get_node(db: Session, node_id: int):
+    node = db.query(models.Node).filter_by(id = node_id).first()
+    if node is None:
+        raise HTTPException(status_code=404, detail = "Node does not exist")
     return schemas.Node.from_orm(node)
-
-        
-async def get_graph(db: Session, system_id: int, graph_id: int, user: schemas.User):
-    system = await system_selector(system_id=system_id, user=user, db=db)
-    graph = await graph_selector(graph_id=graph_id, db=db, system = system)
-    return schemas.Graph.from_orm(graph)
 
 
 async def get_systems(user: schemas.User, db: Session):
@@ -132,43 +123,47 @@ async def get_system(user: schemas.User, db: Session, system_id: int):
     system = await system_selector(system_id=system_id, user=user, db=db) #query returns model
     return schemas.SystemProbability.from_orm(system)
 
-async def get_nodes(user: schemas.User, db: Session, system_id: int): 
-    nodes = db.query(models.Node).filter_by(owner_id = system_id) 
+async def get_nodes(db: Session, system_id: int): 
+    nodes = db.query(models.Node).filter_by(owner_id = system_id)
+    if nodes is None:
+        raise HTTPException(status_code=404, detail = "Node does not exist") 
     return list(map(schemas.Node.from_orm, nodes))
 
-async def get_graphs(user: schemas.User, db: Session, system_id: int): 
-    graphs = db.query(models.Graph).filter_by(owner_id = system_id) 
-    return list(map(schemas.Graph.from_orm, graphs))  
 
 async def delete_system(system_id: int, user: schemas.User, db: Session):
     system = await system_selector(system_id=system_id, user=user, db = db)
-    nodes =db.query(models.Node).filter(models.Node.owner_id == system_id).all()
-    graphs = db.query(models.Graph).filter(models.Graph.owner_id == system_id).all()
+    nodes = db.query(models.Node).filter(models.Node.owner_id == system_id).all()
+    # graphs = db.query(models.Graph).filter(models.Graph.owner_id == system_id).all()
     
     if nodes is not None:
         try:
             #db.query(models.Node).filter(models.Node.owner_id == system_id).delete()
             for o in nodes:
+                delgraph = db.query(models.Graph).filter(models.Graph.owner_id == o.id).all()
+                if delgraph is not None:
+                    try:
+                        for i in delgraph:
+                            db.delete(i)
+                        db.commit()
+                    except Exception as e:
+                        raise HTTPException(status_code = 400, detail= f"Unable to delete Graphs: {e}")
                 db.delete(o)
             db.commit()
         except Exception as e:
             raise HTTPException(status_code = 400, detail= f"Unable to delete Nodes: {e}")
         
-    if graphs is not None:
+    if system is not None:
         try:
-            for o in graphs:
-                db.delete(o)
-            db.commit()
+            db.delete(system)
         except Exception as e:
-            raise HTTPException(status_code = 400, detail= f"Unable to delete Graphs: {e}")
-        
-    db.delete(system)
+            raise HTTPException(status_code = 400, detail= f"Unable to delete System: {e}")
     db.commit()
     
 async def update_system(system_id: int, system: schemas.SystemProbabilityCreate, user: schemas.User, db: Session):
     system_db = await system_selector(system_id=system_id, user=user, db=db)
-    system_db.name = system.name
+    system_db.name = system.name 
     system_db.date_last_updated = _dt.datetime.utcnow()
+    # system_db.system_probability = system.system_probability #might change it to a function
     db.commit()
     db.refresh(system_db)
     return schemas.SystemProbability.from_orm(system_db)
@@ -180,13 +175,6 @@ async def delete_node(system_id: int,  node_id: int, user: schemas.User , db: Se
     db.delete(node)
     db.commit()
 
-async def delete_graph(system_id: int,  graph_id: int, user: schemas.User , db: Session ):
-    # system = await system_selector(system_id=system_id, user=user, db=db)
-    system = await system_selector(system_id=system_id, user=user, db=db)
-    graph = await graph_selector(graph_id=graph_id, db=db, system = system)
-    db.delete(graph)
-    db.commit()
-
 async def update_node(system_id: int,  node_id: int, node: schemas.NodeCreate , db: Session, user: schemas.User):
     system = await system_selector(system_id=system_id, user=user, db=db)
     node_db = await node_selector(node_id=node_id, db=db, system = system)
@@ -196,11 +184,47 @@ async def update_node(system_id: int,  node_id: int, node: schemas.NodeCreate , 
     db.refresh(node_db)
     return schemas.Node.from_orm(node_db)
 
-async def update_graph(system_id: int,  graph_id: int, graph: schemas.GraphCreate , db: Session, user: schemas.User):
+async def update_graph(system_id: int,  graph_id: int, graph: schemas.GraphCreate , db: Session, user: schemas.User, node_id: int):
     system = await system_selector(system_id=system_id, user=user, db=db)
-    graph_db = await graph_selector(graph_id=graph_id, db=db, system = system)
-    graph_db.node_id = graph.node_id
-    graph_db.edge_id = graph.edge_id
+    node_db = await node_selector(node_id=node_id, system=system, db=db)
+    graph_db = await graph_selector(graph_id=graph_id, db=db, node = node_db)
+    graph_db.edge_node_id = graph.edge_node_id
     db.commit()
     db.refresh(graph_db)
     return schemas.Graph.from_orm(graph_db)
+
+async def delete_graph(system_id: int,  graph_id: int, node_id: int, user: schemas.User , db: Session ):
+    # system = await system_selector(system_id=system_id, user=user, db=db)
+    system = await system_selector(system_id=system_id, user=user, db=db)
+    node_db = await node_selector(node_id=node_id, system=system, db=db)
+    graph_db = await graph_selector(graph_id=graph_id, db=db, node = node_db)
+    db.delete(graph_db)
+    db.commit()
+
+async def get_graphs( db: Session, node_id: int): 
+    # system = await system_selector(user=user, db=db, system_id = system_id)
+    # node = await node_selector(system=system, db=db, node_id=node_id)
+    graphs = db.query(models.Graph).filter_by(owner_id = node_id) 
+    if graphs is None:
+        raise HTTPException(status_code=404, detail = "Graph does not exist")
+    return list(map(schemas.Graph.from_orm, graphs))  
+
+        
+async def get_graph(db: Session, graph_id: int):
+    # system = await system_selector(system_id=system_id, user=user, db=db)
+    graph = db.query(models.Graph).filter_by(id = graph_id).first()
+    if graph is None:
+        raise HTTPException(status_code=404, detail = "Graph does not exist")
+    return schemas.Graph.from_orm(graph)
+
+async def create_graph(db: Session, graph: schemas.GraphCreate, node_id: int, user: schemas.User, system_id: int):
+    #just exception/error cheking
+    db_system = await system_selector(user=user, db=db, system_id=system_id)
+    await node_selector(node_id = node_id, system = db_system , db = db)      
+    #done error checking
+    graph = models.Graph(**graph.dict(), owner_id = node_id)
+    db.add(graph)
+    db.commit()
+    db.refresh(graph)
+    return schemas.Graph.from_orm(graph)
+
