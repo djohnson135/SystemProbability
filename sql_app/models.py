@@ -68,8 +68,8 @@ class Graph(Base):
 
     #create columns
     id = Column(Integer, primary_key=True, index=True)
-    edge_id = Column(Integer, index = True)
-    owner_id = Column(Integer, ForeignKey("Node.id")) #id of systemProb
+    edge_node_id = Column(Integer,ForeignKey("Node.id"), nullable=False)
+    owner_id = Column(Integer, ForeignKey("Node.id"), nullable = False) #id of systemProb
     #create relationship
     owner = relationship("Node", back_populates="Graphs")
 

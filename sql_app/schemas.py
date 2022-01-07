@@ -29,7 +29,7 @@ class User(UserBase):
 
 class GraphBase(BaseModel):
 
-    edge_id: int
+    edge_node_id: int
 
 
 

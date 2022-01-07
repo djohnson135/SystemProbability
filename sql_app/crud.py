@@ -180,7 +180,7 @@ async def update_node(system_id: int,  node_id: int, node: schemas.NodeCreate , 
 #     system = await system_selector(system_id=system_id, user=user, db=db)
 #     graph_db = await graph_selector(graph_id=graph_id, db=db, system = system)
 #     graph_db.node_id = graph.node_id
-#     graph_db.edge_id = graph.edge_id
+#     graph_db.edge_node_id = graph.edge_node_id
 #     db.commit()
 #     db.refresh(graph_db)
 #     return schemas.Graph.from_orm(graph_db)
