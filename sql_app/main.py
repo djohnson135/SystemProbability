@@ -82,11 +82,14 @@ async def get_systems(user: schemas.User = Depends(crud.get_current_user), db: S
 async def get_system(system_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
     return await crud.get_system(system_id=system_id, user=user, db=db)
 
-@app.delete("/users/me/SystemProbability/{system_id}", status_code=204)
-async def delete_system(system_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
+
+# need to make edits to this because changing database structure
+
+# @app.delete("/users/me/SystemProbability/{system_id}", status_code=204)
+# async def delete_system(system_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
     
-    await crud.delete_system(system_id=system_id, user=user, db=db)
-    return {"Message", "Successfully Deleted"}
+#     await crud.delete_system(system_id=system_id, user=user, db=db)
+#     return {"Message", "Successfully Deleted"}
 
 
 @app.put("/users/me/SystemProbability/{system_id}", status_code=200)
@@ -96,13 +99,13 @@ async def update_system(system_id: int, system: schemas.SystemProbabilityCreate,
 
 
 #need to add endpoints for graph and node
-@app.get("/users/me/SystemProbability/{system_id}/Nodes/{node_id}", response_model= schemas.Node)
-async def get_node(system_id: int, node_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
-    return await crud.get_node(system_id=system_id, node_id=node_id,user=user, db=db)
+@app.get("/users/me/Node/{node_id}", response_model= schemas.Node)
+async def get_node( node_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
+    return await crud.get_node( node_id=node_id, db=db)
 
-@app.get("/users/me/SystemProbability/{system_id}/Nodes/", response_model= List[schemas.Node])
+@app.get("/users/me/Nodes/{system_id}", response_model= List[schemas.Node])
 async def get_nodes(system_id:int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
-    return await crud.get_nodes(system_id = system_id, user = user, db=db)
+    return await crud.get_nodes(system_id = system_id,  db=db)
 
 @app.post("/users/me/SystemProbability/{system_id}/Nodes/",response_model= schemas.Node)
 async def create_node(system_id: int, node: schemas.NodeCreate, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
@@ -118,24 +121,27 @@ async def update_node(system_id: int, node_id: int, node: schemas.NodeCreate, us
     await crud.update_node(node_id = node_id, system_id=system_id, db=db, node=node, user=user)
     return {"Message", "Successfully Updated"}   
 
-@app.post("/users/me/SystemProbability/{system_id}/Graphs/",response_model= schemas.Graph)
-async def create_graph(system_id: int, graph: schemas.GraphCreate, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
-    return await crud.create_graph(db=db, graph=graph, system_id=system_id, user=user)
 
-@app.get("/users/me/SystemProbability/{system_id}/Graphs/", response_model= List[schemas.Graph])
-async def get_graphs(system_id:int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
-    return await crud.get_graphs(system_id = system_id, user = user, db=db)
 
-@app.delete("/users/me/SystemProbability/{system_id}/Graphs/{graph_id}", status_code=204)
-async def delete_graph(system_id: int,  graph_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
-    await crud.delete_graph(system_id=system_id, user=user, graph_id = graph_id, db=db)
-    return {"Message", "Successfully Deleted"}
 
-@app.put("/users/me/SystemProbability/{system_id}/Graphs/{graph_id}", status_code=200)
-async def update_graph(system_id: int, graph_id: int, graph: schemas.GraphCreate, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
-    await crud.update_graph(graph_id = graph_id, system_id=system_id, db=db, graph=graph, user=user)
-    return {"Message", "Successfully Updated"}   
+@app.post("/users/me/SystemProbability/{system_id}/Nodes/{node_id}/Graphs/",response_model= schemas.Graph)
+async def create_graph(system_id: int, node_id: int, graph: schemas.GraphCreate, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
+    return await crud.create_graph(db=db, graph=graph, system_id=system_id,node_id=node_id, user=user)
 
-@app.get("/users/me/SystemProbability/{system_id}/Graphs/{graph_id}", response_model= schemas.Graph)
-async def get_graph(system_id: int, graph_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
-    return await crud.get_graph(system_id=system_id, graph_id=graph_id,user=user, db=db)
+@app.get("/users/me/Graphs/{node_id}", response_model= List[schemas.Graph])
+async def get_graphs( node_id : int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
+    return await crud.get_graphs(node_id = node_id,  db=db)
+
+# @app.delete("/users/me/SystemProbability/{system_id}/Graphs/{graph_id}", status_code=204)
+# async def delete_graph(system_id: int,  graph_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
+#     await crud.delete_graph(system_id=system_id, user=user, graph_id = graph_id, db=db)
+#     return {"Message", "Successfully Deleted"}
+
+# @app.put("/users/me/SystemProbability/{system_id}/Graphs/{graph_id}", status_code=200)
+# async def update_graph(system_id: int, graph_id: int, graph: schemas.GraphCreate, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
+#     await crud.update_graph(graph_id = graph_id, system_id=system_id, db=db, graph=graph, user=user)
+#     return {"Message", "Successfully Updated"}   
+
+@app.get("/users/me/Graph/{graph_id}", response_model= schemas.Graph)
+async def get_graph(graph_id: int, user: schemas.User = Depends(crud.get_current_user), db: Session = Depends(crud.get_db)):
+    return await crud.get_graph( graph_id=graph_id, db=db)

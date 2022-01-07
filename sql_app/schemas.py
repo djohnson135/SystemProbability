@@ -29,7 +29,6 @@ class User(UserBase):
 
 class GraphBase(BaseModel):
 
-    node_id: int
     edge_id: int
 
 
@@ -56,7 +55,7 @@ class NodeBase(BaseModel):
 class Node(NodeBase):
     id: int
     owner_id: int
-
+    Graphs: List[Graph] = []
     class Config:
         orm_mode = True
 
@@ -77,7 +76,7 @@ class SystemProbability(SystemProbabilityBase):
     date_created: _dt.datetime
     date_last_updated: _dt.datetime
     system_probability: float
-    Graphs: List[Graph] = []
+    # Graphs: List[Graph] = []
     Nodes: List[Node] = []
 
     
@@ -100,3 +99,4 @@ class SystemProbabilityCreate(SystemProbabilityBase):
 class NodeCreate(NodeBase):
     pass
 
+#need to create my response models

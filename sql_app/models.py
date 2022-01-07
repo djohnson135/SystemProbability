@@ -38,25 +38,10 @@ class SystemProbability(Base):
     
     system_probability = Column(Float,  default=0 )
     
-    Graphs = relationship("Graph", back_populates="owner")
+    # Graphs = relationship("Graph", back_populates="owner")
     Nodes = relationship("Node", back_populates="owner")
 
     owner = relationship("User",back_populates="SystemProbabilitys")
-
-
-#creating tables
-class Graph(Base):
-
-    __tablename__ = "Graph"
-
-    #create columns
-    id = Column(Integer, primary_key=True, index=True)
-    node_id = Column(Integer, index = True)
-    edge_id = Column(Integer, index = True)
-    owner_id = Column(Integer, ForeignKey("SystemProbability.id")) #id of systemProb
-    #create relationship
-    owner = relationship("SystemProbability", back_populates="Graphs")
-
 
 
 
@@ -71,3 +56,21 @@ class Node(Base):
     owner_id = Column(Integer, ForeignKey("SystemProbability.id"))
     #create relationship
     owner = relationship("SystemProbability", back_populates="Nodes")
+    Graphs = relationship("Graph", back_populates="owner")
+    
+    
+    
+    
+#creating tables
+class Graph(Base):
+
+    __tablename__ = "Graph"
+
+    #create columns
+    id = Column(Integer, primary_key=True, index=True)
+    edge_id = Column(Integer, index = True)
+    owner_id = Column(Integer, ForeignKey("Node.id")) #id of systemProb
+    #create relationship
+    owner = relationship("Node", back_populates="Graphs")
+
+
