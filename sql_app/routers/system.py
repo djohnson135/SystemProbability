@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from ..dependencies import get_current_user
 
 router = APIRouter(
-    prefix="/users/me",
+    prefix="/users/me/SystemProbability",
     # tags=["users"]
-    dependencies=[Depends(get_current_user)],
-    responses={404: {"description" : "Not found"}}
+    # dependencies=[Depends(get_current_user)],
+    responses={404: {"description" : "Not found"}},
 )
 
 @router.get("/")

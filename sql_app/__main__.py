@@ -17,38 +17,21 @@ from sql_app.crud import user as crud_user
 # from sql_app.crud import helper as crud_helper
 from . import dependencies, schemas 
 
-
+from sql_app.routers import user as user_route
+from sql_app.routers import graph as graph_route
+from sql_app.routers import node as node_route
+from sql_app.routers import system as system_route
 # from .database import SessionLocal, engine
 
 
-# models.Base.metadata.create_all(bind=engine)
-
 dependencies.create_database()
 
-#we can only send schemas from endpoints and not models
+
 app = FastAPI()
+# dependencies=[Depends(dependencies.get_current_user)]
 
-#uvicorn sql_app.main:app --reload
+app.include_router(user_route.router)
 
-#https://towardsdatascience.com/fastapi-cloud-database-loading-with-python-1f531f1d438a
-
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["http://localhost:8000"], # * means all
-#     allow_methods=["*"], #Get put etc...
-#     allow_headers=["*"],
-#     allow_credentials=True,
-# )
-
-
-
-# Dependency
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
 
 @app.get("/api/")
 async def root():
@@ -71,9 +54,9 @@ async def generate_token(form_data: _security.OAuth2PasswordRequestForm = Depend
         raise HTTPException(status_code=401, detail="Invalid Credentials")
     return await dependencies.create_token(user)
 
-@app.get("/users/me", response_model= schemas.User)
-async def get_user(user: schemas.User = Depends(dependencies.get_current_user)):
-    return user
+# @app.get("/users/me", response_model= schemas.User)
+# async def get_user(user: schemas.User = Depends(dependencies.get_current_user)):
+#     return user
 
 @app.post("/users/me/SystemProbability/", response_model=schemas.SystemProbability)
 async def create_system_of_probability(system: schemas.SystemProbabilityCreate, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
