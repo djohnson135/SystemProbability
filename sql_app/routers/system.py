@@ -7,7 +7,7 @@ from ..crud import system as crud_system
 
 router = APIRouter(
     prefix="/users/me/SystemProbability",
-    tags=["system_id"],
+    tags=["system"],
     # dependencies=[Depends(get_current_user)],
     responses={404: {"description" : "Not found"}},
 )

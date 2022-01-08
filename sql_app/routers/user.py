@@ -4,7 +4,7 @@ from ..schemas import User
 
 router = APIRouter(
     prefix="/users/me",
-    # tags=["users"],
+    tags=["user"],
     # dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )

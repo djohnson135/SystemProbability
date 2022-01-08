@@ -32,6 +32,10 @@ app = FastAPI()
 
 app.include_router(user_route.router)
 app.include_router(system_route.router)
+app.include_router(node_route.get_router)
+app.include_router(node_route.router)
+app.include_router(graph_route.router)
+app.include_router(graph_route.get_router)
 
 @app.get("/api/")
 async def root():
@@ -55,53 +59,6 @@ async def generate_token(form_data: _security.OAuth2PasswordRequestForm = Depend
     return await dependencies.create_token(user)
 
 
-
-#need to add endpoints for graph and node
-@app.get("/users/me/Node/{node_id}", response_model= schemas.Node)
-async def get_node( node_id: int, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    return await crud_node.get_node( node_id=node_id, db=db)
-
-@app.get("/users/me/Nodes/{system_id}", response_model= List[schemas.Node])
-async def get_nodes(system_id:int, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    return await crud_node.get_nodes(system_id = system_id,  db=db)
-
-@app.post("/users/me/SystemProbability/{system_id}/Nodes/",response_model= schemas.Node)
-async def create_node(system_id: int, node: schemas.NodeCreate, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    return await crud_node.create_node(db=db, node=node,system_id=system_id, user=user)
-    
-@app.delete("/users/me/SystemProbability/{system_id}/Nodes/{node_id}", status_code=204)
-async def delete_node(system_id: int,  node_id: int, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    await crud_node.delete_node(system_id=system_id, user=user, node_id = node_id, db=db)
-    return {"Message", "Successfully Deleted"}
-    
-@app.put("/users/me/SystemProbability/{system_id}/Nodes/{node_id}", status_code=200)
-async def update_node(system_id: int, node_id: int, node: schemas.NodeCreate, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    await crud_node.update_node(node_id = node_id, system_id=system_id, db=db, node=node, user=user)
-    return {"Message", "Successfully Updated"}   
-
-
-
-@app.post("/users/me/SystemProbability/{system_id}/Nodes/{node_id}/Graphs/",response_model= schemas.Graph)
-async def create_graph(system_id: int, node_id: int, graph: schemas.GraphCreate, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    return await crud_graph.create_graph(db=db, graph=graph, system_id=system_id,node_id=node_id, user=user)
-
-@app.get("/users/me/Graphs/{node_id}", response_model= List[schemas.Graph])
-async def get_graphs( node_id : int, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    return await crud_graph.get_graphs(node_id = node_id,  db=db)
-
-@app.delete("/users/me/SystemProbability/{system_id}/Nodes/{node_id}/Graphs/{graph_id}", status_code=204)
-async def delete_graph(system_id: int, node_id: int, graph_id: int, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    await crud_graph.delete_graph(system_id=system_id, user=user, graph_id = graph_id, db=db, node_id=node_id)
-    return {"Message", "Successfully Deleted"}
-
-@app.put("/users/me/SystemProbability/{system_id}/Nodes/{node_id}/Graphs/{graph_id}", status_code=200)
-async def update_graph(system_id: int, node_id : int, graph_id: int, graph: schemas.GraphCreate, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    await crud_graph.update_graph(graph_id = graph_id, system_id=system_id, db=db, graph=graph, user=user, node_id = node_id)
-    return {"Message", "Successfully Updated"}   
-
-@app.get("/users/me/Graph/{graph_id}", response_model= schemas.Graph)
-async def get_graph(graph_id: int, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    return await crud_graph.get_graph( graph_id=graph_id, db=db)
 
 
 
