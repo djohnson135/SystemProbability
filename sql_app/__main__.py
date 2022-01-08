@@ -31,7 +31,7 @@ app = FastAPI()
 # dependencies=[Depends(dependencies.get_current_user)]
 
 app.include_router(user_route.router)
-
+app.include_router(system_route.router)
 
 @app.get("/api/")
 async def root():
@@ -54,35 +54,6 @@ async def generate_token(form_data: _security.OAuth2PasswordRequestForm = Depend
         raise HTTPException(status_code=401, detail="Invalid Credentials")
     return await dependencies.create_token(user)
 
-# @app.get("/users/me", response_model= schemas.User)
-# async def get_user(user: schemas.User = Depends(dependencies.get_current_user)):
-#     return user
-
-@app.post("/users/me/SystemProbability/", response_model=schemas.SystemProbability)
-async def create_system_of_probability(system: schemas.SystemProbabilityCreate, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    return await crud_system.create_system(user=user, db=db, system=system)
-
-@app.get("/users/me/SystemProbability/", response_model=List[schemas.SystemProbability])
-async def get_systems(user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    return await crud_system.get_systems(user=user, db = db)
-
-@app.get("/users/me/SystemProbability/{system_id}", status_code=200)
-async def get_system(system_id: int, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    return await crud_system.get_system(system_id=system_id, user=user, db=db)
-
-
-# need to make edits to this because changing database structure
-
-@app.delete("/users/me/SystemProbability/{system_id}", status_code=204)
-async def delete_system(system_id: int, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    await crud_system.delete_system(system_id=system_id, user=user, db=db)
-    return {"Message", "Successfully Deleted"}
-
-
-@app.put("/users/me/SystemProbability/{system_id}", status_code=200)
-async def update_system(system_id: int, system: schemas.SystemProbabilityCreate, user: schemas.User = Depends(dependencies.get_current_user), db: Session = Depends(dependencies.get_db)):
-    await crud_system.update_system(system_id=system_id, system=system, db=db, user=user)
-    return {"Message", "Successfully Updated"}
 
 
 #need to add endpoints for graph and node
