@@ -1,4 +1,6 @@
-from ..dependencies import Session, models, schemas, _hash
+from .. import models, schemas
+import passlib.hash as _hash
+from sqlalchemy.orm import Session
 
 
 async def create_user(user: schemas.UserCreate, db: Session):
@@ -8,6 +10,8 @@ async def create_user(user: schemas.UserCreate, db: Session):
     db.refresh(user_obj)
     return user_obj
 
+async def get_user_by_email(email: str, db: Session):
+    return db.query(models.User).filter(models.User.email == email).first()
 
 
 

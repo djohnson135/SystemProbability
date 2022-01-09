@@ -1,4 +1,8 @@
-from ..dependencies import schemas, Session, HTTPException, models
+from .. import schemas, models
+
+from fastapi.exceptions import HTTPException
+
+from sqlalchemy.orm import Session
 
 
 

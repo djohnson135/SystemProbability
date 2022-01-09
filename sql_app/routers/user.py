@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from ..dependencies import get_current_user, get_db, create_token, authenticate_user, get_user_by_email
+from ..dependencies import get_current_user, get_db, create_token, authenticate_user
 from ..schemas import User, UserCreate
 from sqlalchemy.orm import Session
 from ..crud import user as crud_user
@@ -21,7 +21,7 @@ async def get_user(user: User = Depends(get_current_user)):
 
 @router.post("/users/")
 async def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = await get_user_by_email(email = user.email, db = db)
+    db_user = await crud_user.get_user_by_email(email = user.email, db = db)
     if db_user:
         raise HTTPException(status_code=400, detail= "Email already in use")
     users = await crud_user.create_user(user = user, db = db)
