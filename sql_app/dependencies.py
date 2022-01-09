@@ -1,13 +1,14 @@
-from fastapi import Header, HTTPException
+
+# from fastapi import Header
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
-import passlib.hash as _hash
-from sqlalchemy.sql.expression import false
+# from sqlalchemy.sql.expression import false
 import jwt as _jwt
 from fastapi import Depends
 import fastapi.security as _security
 from .database import SessionLocal, engine
-import datetime as _dt
+
+from .crud.user import get_user_by_email
 
 from . import models, schemas
 
@@ -46,9 +47,6 @@ async def create_token(user: models.User):
     user_obj = schemas.User.from_orm(user)   #from orm takes a model and maps it to the schema. Makes it a schema object
     token = _jwt.encode(user_obj.dict(), JWT_SECRET)
     return dict(access_token=token, token_type= "bearer")
-
-async def get_user_by_email(email: str, db: Session):
-    return db.query(models.User).filter(models.User.email == email).first()
 
 
 
