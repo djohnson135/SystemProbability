@@ -1,4 +1,3 @@
-
 # from fastapi import Header
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
@@ -7,12 +6,10 @@ import jwt as _jwt
 from fastapi import Depends
 import fastapi.security as _security
 from .database import SessionLocal, engine
-
-from .crud.user import get_user_by_email
+from .crud.user import get_by_email
 
 from . import models, schemas
 
-# uvicorn.run(app,host="0.0.0.0", port=8000)
 
 
 JWT_SECRET = "myjwtsecret"
@@ -30,7 +27,7 @@ def get_db():
         db.close()
 
 async def authenticate_user(email: str, password: str, db: Session):
-    user = await get_user_by_email(db = db, email = email)
+    user = await get_by_email(db = db, email = email)
     if not user or not user.verify_password(password):
         return False
     return user
@@ -47,6 +44,7 @@ async def create_token(user: models.User):
     user_obj = schemas.User.from_orm(user)   #from orm takes a model and maps it to the schema. Makes it a schema object
     token = _jwt.encode(user_obj.dict(), JWT_SECRET)
     return dict(access_token=token, token_type= "bearer")
+
 
 
 

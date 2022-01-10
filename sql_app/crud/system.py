@@ -9,17 +9,17 @@ from sqlalchemy.orm import Session
 from .helper import system_selector
 
 
-async def get_systems(user: schemas.User, db: Session):
+async def get_all(user: schemas.User, db: Session):
     systems = db.query(models.SystemProbability).filter_by(owner_id = user.id)
     return list(map(schemas.SystemProbability.from_orm, systems)) #does from orm through each system and adds it to a list
 
 
-async def get_system(user: schemas.User, db: Session, system_id: int):
+async def get_by_id(user: schemas.User, db: Session, system_id: int):
     system = await system_selector(system_id=system_id, user=user, db=db) #query returns model
     return schemas.SystemProbability.from_orm(system)
 
 
-async def delete_system(system_id: int, user: schemas.User, db: Session):
+async def delete(system_id: int, user: schemas.User, db: Session):
     system = await system_selector(system_id=system_id, user=user, db = db)
     nodes = db.query(models.Node).filter(models.Node.owner_id == system_id).all()
     # graphs = db.query(models.Graph).filter(models.Graph.owner_id == system_id).all()
@@ -51,7 +51,7 @@ async def delete_system(system_id: int, user: schemas.User, db: Session):
     
     
    
-async def update_system(system_id: int, system: schemas.SystemProbabilityCreate, user: schemas.User, db: Session):
+async def update(system_id: int, system: schemas.SystemProbabilityCreate, user: schemas.User, db: Session):
     system_db = await system_selector(system_id=system_id, user=user, db=db)
     system_db.name = system.name 
     system_db.date_last_updated = _dt.datetime.utcnow()
@@ -62,7 +62,7 @@ async def update_system(system_id: int, system: schemas.SystemProbabilityCreate,
 
 
 
-async def create_system(user: schemas.User, db: Session, system: schemas.SystemProbabilityCreate):
+async def create(user: schemas.User, db: Session, system: schemas.SystemProbabilityCreate):
     system = models.SystemProbability(**system.dict(), owner_id = user.id) #shorthand for copying the data from one model to the other
     db.add(system)
     db.commit()

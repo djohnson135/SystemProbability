@@ -21,12 +21,12 @@ async def get_user(user: User = Depends(get_current_user)):
 
 
 @router.post("/users/")
-async def create_user(user: UserCreate, db: Session = Depends(get_db)):
+async def create(user: UserCreate, db: Session = Depends(get_db)):
 
-    db_user = await crud_user.get_user_by_email(email = user.email, db = db)
+    db_user = await crud_user.get_by_email(email = user.email, db = db)
     if db_user:
         raise HTTPException(status_code=400, detail= "Email already in use")
-    users = await crud_user.create_user(user = user, db = db)
+    users = await crud_user.create(user = user, db = db)
     return await create_token(users)
     
     
