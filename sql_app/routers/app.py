@@ -16,6 +16,6 @@ app.include_router(node_route)
 app.include_router(graph_route)
 app.include_router(get_graph_route)
 
-@app.get("/api/")
-async def root():
-    return {"Message": "System Proabbility Calculator"}
+# @app.get("/api/")
+# async def root():
+#     return {"Message": "System Proabbility Calculator"}
