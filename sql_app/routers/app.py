@@ -1,21 +1,18 @@
 from fastapi import FastAPI
-from .user import router as user_route
-from .graph import router as graph_route
-from .graph import get_router as get_by_id_route
-from .node import router as node_route
-from .node import get_router as get_by_id_route
-from .system import router as system_route
+
+from . import graph, node, system, user
+
 
 app = FastAPI()
 # dependencies=[Depends(dependencies.get_current_user)]
 
-app.include_router(user_route)
-app.include_router(system_route)
-app.include_router(get_by_id_route)
-app.include_router(node_route)
-app.include_router(graph_route)
-app.include_router(get_by_id_route)
+app.include_router(user.router)
+app.include_router(system.router)
+app.include_router(node.get_router)
+app.include_router(node.router)
+app.include_router(graph.router)
+app.include_router(graph.get_router)
 
-@app.get("/api/")
-async def root():
-    return {"Message": "System Proabbility Calculator"}
+# @app.get("/api/")
+# async def root():
+#     return {"Message": "System Proabbility Calculator"}

@@ -1,4 +1,5 @@
 
+from fastapi.param_functions import Query
 from .. import schemas, models
 
 from fastapi.exceptions import HTTPException
@@ -28,3 +29,7 @@ async def graph_selector(graph_id: int, node: schemas.Node, db: Session):
     if graph is None:
         raise HTTPException(status_code=404, detail = "Graph does not exist")
     return graph
+
+async def graph_error(graph):
+    if graph is None:
+        raise HTTPException(status_code=404, detail = "Graph does not exist")

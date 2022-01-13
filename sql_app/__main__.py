@@ -7,8 +7,8 @@ from .routers.app import app
 from . import processes
 create_database()
 
-if __name__ == "__main__":
-    uvicorn.run("sql_app.__main__:app", host="0.0.0.0", port=8000, reload=True)
+# if __name__ == "__main__":
+#     uvicorn.run("sql_app.__main__:app", host="0.0.0.0", port=8000, reload=True)
   
 
 
@@ -17,6 +17,9 @@ async def root():
     return {"Message": "System Proabbility Calculator"}
 
 
+
+
+processes.initgraphexample()
 
 # try:
 #     loop = asyncio.get_running_loop()
@@ -35,4 +38,5 @@ async def root():
 #     asyncio.run(processes.set_adj_list(graph_id=1))
 
 # asyncio.run(processes.set_adj_list(graph_id=1))
-processes.set_adj_list(graph_id=1)
+
+# processes.set_adj_list(graph_id=1)

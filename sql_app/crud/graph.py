@@ -3,7 +3,7 @@ from .. import schemas, models
 from fastapi.exceptions import HTTPException
 
 from sqlalchemy.orm import Session
-from .helper import system_selector, node_selector, graph_selector
+from .helper import system_selector, node_selector, graph_selector, graph_error
 
 
 async def update(system_id: int,  graph_id: int, graph: schemas.GraphCreate , db: Session, user: schemas.User, node_id: int):
@@ -29,8 +29,9 @@ async def get_all( db: Session, node_id: int):
     # system = await system_selector(user=user, db=db, system_id = system_id)
     # node = await node_selector(system=system, db=db, node_id=node_id)
     graphs = db.query(models.Graph).filter_by(owner_id = node_id) 
-    if graphs is None:
-        raise HTTPException(status_code=404, detail = "Graph does not exist")
+    # if graphs is None:
+    #     raise HTTPException(status_code=404, detail = "Graph does not exist")
+    # graph_error(graphs)
     return list(map(schemas.Graph.from_orm, graphs))  
 
         
@@ -39,6 +40,7 @@ async def get_by_id(db: Session, graph_id: int):
     graph = db.query(models.Graph).filter_by(id = graph_id).first()
     if graph is None:
         raise HTTPException(status_code=404, detail = "Graph does not exist")
+    # graph_error(graph)
     return schemas.Graph.from_orm(graph)
 
 async def create(db: Session, graph: schemas.GraphCreate, node_id: int, user: schemas.User, system_id: int):
