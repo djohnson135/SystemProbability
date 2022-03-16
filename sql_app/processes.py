@@ -12,6 +12,13 @@ from . import adj_list
 # from .crud import graph
 
 
+class probability:
+    def __init__(self):
+        self.dict = dict()
+    def add_probability(self, node_id, probability): #as a string
+        self.dict[node_id] = probability 
+    def return_probability(self,node_id):
+        return self.dict[node_id]
 #illustrated graph
 #maybe use strings and define start as start node or as 0
 
@@ -27,22 +34,6 @@ from . import adj_list
 #               6 : Null
 # }
 
-
-def initgraphexample():
-    #the following above is represented below. 7 vertices
-    V = 7
-
-    # Create graph and edges. S = start = 0
-    graph = adj_list.Graph(V)
-    graph.add_edge(0, 1)
-    graph.add_edge(0, 3)
-    graph.add_edge(1, 2)
-    graph.add_edge(2, 4)
-    graph.add_edge(2, 5)
-    graph.add_edge(2, 6)
-    graph.print_agraph()
-
-    
 
 
 
@@ -72,7 +63,7 @@ def initgraphexample():
 #                 [{'5':null}],
 #                 [{'6':null}]]
 
-# calculated_system_probability(example_list)
+
  
 # async def set_adj_list(graph_id: int, db: Session = Depends(get_db)): #
     
