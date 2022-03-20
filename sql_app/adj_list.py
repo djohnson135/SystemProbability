@@ -1,5 +1,11 @@
 import copy
 
+from enum import Enum
+
+
+class status(Enum):
+    begin = 1
+    terminal = 2
 
 #add probability later but for now lets get into the crux of this problem
 class AdjNode:
@@ -42,6 +48,15 @@ class Graph: # add a copy constructor to inherit graphs
                 print(" -> {}".format(temp.vertex), end="")
                 temp = temp.next
             print(" \n")
+            
+    def reduce_graph(self):
+    #first check if you can find an element in series. Null or special character needed.
+    #to find an element in series we will need to determine if the size of a row in the adjacency list is 1 (not including the vertex)
+        status.terminal
+        for i in range(self.V):
+            pass
+            
+            
     # @classmethod
     # def from_graph(cls, class_instance):
     #     vertex = copy.deepcopy(class_instance.vertex)
@@ -71,6 +86,5 @@ graph.print_agraph()
 print("copy graph should not have the added 4 1\n")
 test_copy_graph.print_agraph()
 
-def reduce_graph(system):
-    
-    pass
+
+
