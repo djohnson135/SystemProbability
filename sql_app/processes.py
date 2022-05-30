@@ -38,8 +38,6 @@ class probability:
 
 
 
-
-
 # each value in the matrix is a dictionary with its key (id) and probability
 # def calculated_system_probability(adj_list):
 #     """[summary]
