@@ -9,7 +9,7 @@ create_database()
 
 # if __name__ == "__main__":
 #     uvicorn.run("sql_app.__main__:app", host="0.0.0.0", port=8000, reload=True)
-  
+
 
 
 @app.get("/api/")
@@ -19,7 +19,7 @@ async def root():
 
 
 
-processes.initgraphexample()
+# processes.initgraphexample()
 
 # try:
 #     loop = asyncio.get_running_loop()

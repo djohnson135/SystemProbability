@@ -2,10 +2,9 @@ import copy
 
 from enum import Enum
 
-
 class status(Enum):
-    begin = 1
-    terminal = 2
+    BEGIN = 1
+    TERMINAL = 2
 
 #add probability later but for now lets get into the crux of this problem
 class AdjNode:
@@ -14,7 +13,7 @@ class AdjNode:
         self.next = None
 
 
-class Graph: # add a copy constructor to inherit graphs
+class GraphDict: # add a copy constructor to inherit graphs
     def __init__(self, num, orig=None):
         
         if orig is None:
@@ -24,67 +23,60 @@ class Graph: # add a copy constructor to inherit graphs
         
     def no_copy_constructor(self, num):    
         self.V = num
-        self.graph = [None] * self.V   
+        self.graph = dict()  
     def copy_constructor(self, orig):
         self.V = copy.deepcopy(orig.V)
         self.graph = copy.deepcopy(orig.graph)
         
     # Add edges
     def add_edge(self, s, d):
-        node = AdjNode(d)
-        node.next = self.graph[s]
-        self.graph[s] = node
+        dnode = AdjNode(d)
+        snode = AdjNode(s)
+        
+        
+        if self.graph.get(s) is None:
+            self.graph[s] = list()
+        
+        if self.graph.get(d) is None:
+            self.graph[d] = list()
+            
+        self.graph[s].append(dnode)
+        self.graph[d].append(snode)
 
-        node = AdjNode(s)
-        node.next = self.graph[d]
-        self.graph[d] = node
 
     # Print the graph
     def print_agraph(self):
-        for i in range(self.V):
-            print("Vertex " + str(i) + ":", end="")
-            temp = self.graph[i]
-            while temp:
-                print(" -> {}".format(temp.vertex), end="")
-                temp = temp.next
+        for k, v in self.graph.items():
+            print("Vertex " + str(k) + ":", end="")
+            for i in range(len(v)):
+                print(" -> {}".format(v[i].vertex), end="")
+                # print(v[i].vertex)
+                
             print(" \n")
             
     def reduce_graph(self):
     #first check if you can find an element in series. Null or special character needed.
     #to find an element in series we will need to determine if the size of a row in the adjacency list is 1 (not including the vertex)
-        status.terminal
+        # status.TERMINAL
         for i in range(self.V):
+            
             pass
             
             
+    def Series(self):
+        for k, v in self.graph.items():
+            
+            pass
     # @classmethod
     # def from_graph(cls, class_instance):
     #     vertex = copy.deepcopy(class_instance.vertex)
-        
-
-
-# if __name__ == "adj_list":
 V = 5
 
 # Create graph and edges
-graph = Graph(V)
+graph = GraphDict(V)
 graph.add_edge(0, 1)
 graph.add_edge(0, 2)
 graph.add_edge(0, 3)
 graph.add_edge(1, 2)
 
 graph.print_agraph()
-
-print("\n")
-test_copy_graph = Graph(0,graph) # this is ugly but for now lets just keep it this way you need to have a 0 first to copy
-test_copy_graph.print_agraph()
-
-graph.add_edge(4,1)
-print("added 4, 1 to orig graph\n")
-graph.print_agraph()
-
-print("copy graph should not have the added 4 1\n")
-test_copy_graph.print_agraph()
-
-
-
